@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Home</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            background-image: url('image.png');
+            background-size: 100% auto;
+            background-position: center 40%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .search-bar-container {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(17, 17, 17, 0.95);
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .search-box { display: flex; align-items: center; gap: 10px; flex: 1; max-width: 500px; }
+        .search-box input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .search-box input:focus { border-color: #111111; }
+        .search-box input::placeholder { color: #888; }
+        .search-btn {
+            padding: 12px 24px;
+            background: #111111;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .search-btn:hover { background: #333; transform: translateY(-2px); }
+        .history-switch { display: flex; align-items: center; gap: 10px; }
+        .history-switch button {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid #555;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .history-switch button:hover { background: rgba(255, 255, 255, 0.2); }
+        .logout-btn {
+            padding: 10px 20px;
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+            border: 1px solid #ff453a;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover { background: rgba(255, 69, 58, 0.3); }
+        .ads-section-below-search {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 20px auto;
+            padding: 0 20px;
+        }
+        .ad-banner-small {
+            background: transparent;
+            border: none;
+            border-radius: 16px;
+            padding: 0;
+            text-align: center;
+            overflow: hidden;
+            box-shadow: none;
+            animation: none;
+            position: relative;
+            width: 100%;
+            max-width: 1210px;
+            height: 302px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .ads-bar-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .ads-bar-image {
+            width: 1190px;
+            height: 280px;
+            border-radius: 12px;
+            border: none;
+            object-fit: cover;
+            box-shadow: none;
+            transition: none;
+        }
+        .ads-bar-image:hover {
+            transform: none;
+        }
+        .ads-bar-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .ads-bar-image {
+            width: 1190px;
+            height: 280px;
+            border-radius: 12px;
+            border: none;
+            object-fit: cover;
+            box-shadow: none;
+            transition: none;
+        }
+        .ads-bar-image:hover {
+            transform: none;
+        }
+        .ad-banner-small::after {
+            content: 'Sponsored';
+            position: absolute;
+            top: 12px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 1.5px;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 12px 35px rgba(255, 107, 107, 0.6); }
+            50% { box-shadow: 0 12px 45px rgba(255, 107, 107, 0.9); }
+        }
+        .ad-banner-small::before {
+            content: 'AD';
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 1.5px;
+        }
+        .ad-banner-small .ad-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            display: block;
+            transition: transform 0.3s ease;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        .ad-banner-small:hover .ad-image {
+            transform: scale(1.05);
+        }
+        .ad-banner-small .ad-label {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .tournament-filter {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+            border: 2px solid #333;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: #111111;
+            color: white;
+            border-color: #111111;
+        }
+        .tournament-container {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .tournament-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .tournament-card:hover {
+            border-color: #111111;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .tournament-card.pinned {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        .tournament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .pin-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .pin-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+        .tournament-card.pinned .pin-btn {
+            background: #ffd700;
+            color: #000;
+        }
+        .tournament-type {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .tournament-type.solo {
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+            border: 1px solid #ff453a;
+        }
+        .tournament-type.duo {
+            background: rgba(52, 199, 89, 0.2);
+            color: #34c759;
+            border: 1px solid #34c759;
+        }
+        .tournament-type.squad {
+            background: rgba(10, 132, 255, 0.2);
+            color: #0a84ff;
+            border: 1px solid #0a84ff;
+        }
+        .tournament-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #121212;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            padding: 5px 15px;
+            border-radius: 6px;
+        }
+        .map-name { font-size: 14px; color: #888; margin-bottom: 10px; }
+        .map-name strong { color: white; }
+        .tournament-details { margin: 15px 0; }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+            font-size: 14px;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #888; }
+        .detail-value { color: white; font-weight: bold; }
+        .timer { color: #34c759; font-weight: bold; font-size: 16px; }
+        .prize-section {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .prize-title {
+            text-align: center;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .prize-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 13px;
+        }
+        .prize-place { color: #888; }
+        .prize-amount { color: #ffd700; font-weight: bold; }
+        .join-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #111111, #333);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .join-btn:hover {
+            background: linear-gradient(135deg, #333, #555);
+            transform: translateY(-2px);
+        }
+        .ads-section {
+            width: 100%;
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .ad-banner {
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .ad-banner h3 { color: #ffd700; margin-bottom: 10px; }
+        .ad-banner p { color: #888; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .join-modal {
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header { text-align: center; margin-bottom: 25px; }
+        .modal-header h2 { color: white; font-size: 22px; margin-bottom: 5px; }
+        .modal-header .fee-info { color: #ffd700; font-size: 18px; font-weight: bold; }
+        .payment-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .payment-info h3 { color: #ffd700; margin-bottom: 15px; font-size: 16px; }
+        .account-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        .account-row:last-child { border-bottom: none; }
+        .account-label { color: #888; font-size: 14px; }
+        .account-number { color: white; font-weight: bold; font-size: 16px; }
+        .copy-btn {
+            padding: 6px 15px;
+            background: #111111;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .copy-btn:hover { background: #333; }
+        .tid-section { margin: 20px 0; }
+        .tid-section label { display: block; color: #888; margin-bottom: 8px; font-size: 14px; }
+        .tid-section input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        .tid-section input:focus { border-color: #111111; }
+        .upload-section { margin: 20px 0; }
+        .upload-section label { display: block; color: #888; margin-bottom: 8px; font-size: 14px; }
+        .upload-area {
+            border: 2px dashed #333;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover { border-color: #111111; background: rgba(17, 17, 17, 0.3); }
+        .upload-area p { color: #888; font-size: 14px; }
+        .upload-preview {
+            max-width: 100%;
+            max-height: 150px;
+            margin-top: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+        .modal-buttons { display: flex; gap: 15px; margin-top: 20px; }
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .modal-btn.verify {
+            background: linear-gradient(135deg, #111111, #333);
+            color: white;
+        }
+        .modal-btn.verify:hover { background: linear-gradient(135deg, #333, #555); }
+        .modal-btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+            border: 1px solid #333;
+        }
+        .modal-btn.cancel:hover { background: rgba(255, 255, 255, 0.2); }
+        .verify-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+        .verify-overlay.active { display: flex; }
+        .verify-modal {
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .verify-modal h3 { color: #34c759; font-size: 20px; margin-bottom: 15px; }
+        .verify-modal p { color: #888; margin-bottom: 25px; font-size: 14px; }
+        .timer-display {
+            font-size: 36px;
+            color: #34c759;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        .room-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+        }
+        .room-overlay.active { display: flex; }
+        .room-modal {
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+        }
+        .room-modal h3 { color: #ffd700; font-size: 22px; margin-bottom: 20px; }
+        .room-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .room-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        .room-row:last-child { border-bottom: none; }
+        .room-label { color: #888; font-size: 14px; }
+        .room-value { color: white; font-weight: bold; font-size: 16px; }
+        .room-pin {
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+        .copy-room-btn {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+        .copy-room-btn:hover {
+            background: #ffd700;
+            color: #000;
+        }
+        .room-buttons { display: flex; gap: 15px; }
+        .room-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .room-btn.join {
+            background: linear-gradient(135deg, #111111, #333);
+            color: white;
+        }
+        .room-btn.join:hover { background: linear-gradient(135deg, #333, #555); }
+        .room-btn.pin-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+            border: 1px solid #333;
+        }
+        .room-btn.pin-toggle:hover { background: rgba(255, 255, 255, 0.2); }
+        .close-room-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-room-btn:hover {
+            color: #ff453a;
+            background: rgba(255, 69, 58, 0.1);
+            border-radius: 4px;
+        }
+        .history-header { padding: 20px; text-align: center; }
+        .history-header h1 { font-size: 28px; color: white; margin-bottom: 10px; }
+        .history-list { padding: 20px; max-width: 1400px; margin: 0 auto; }
+        .history-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .history-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .history-winner { color: #ffd700; font-weight: bold; font-size: 14px; }
+        @media (max-width: 768px) {
+            .tournament-container { grid-template-columns: 1fr; }
+            .search-bar-container { flex-direction: column; }
+            .search-box { max-width: 100%; }
+        }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .search-bar-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        max-width: 100%;
+      }
+      .tournament-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 480px) {
+      .google-signin-button {
+        font-size: 2vh;
+        padding: 0 3vw;
+        height: 6vh;
+      }
+      .google-logo {
+        width: 3vh;
+        height: 3vh;
+        font-size: 2.5vh;
+      }
+    }
+    </style>
+</head>
+<body>
+    <div class="search-bar-container">
+        <div class="search-box">
+            <input type="text" id="tournamentSearch" placeholder="Search tournaments..." onkeyup="filterTournaments()">
+            <button class="search-btn" onclick="filterTournaments()">Search</button>
+        </div>
+        <div class="history-switch">
+            <button onclick="showHistory()">History</button>
+            <button onclick="goToHome()">Home</button>
+            <button class="logout-btn" onclick="showLogoutModal()">Logout</button>
+        </div>
+    </div>
+    <div class="ads-section-below-search">
+        <div class="ad-banner-small">
+            <img src="banner.png" alt="Advertisement" class="ad-image">
+            <div class="ad-label">Sponsored</div>
+        </div>
+       <div class="tournament-filter">
+        <button class="filter-btn active" onclick="filterByType('all')">All</button>
+        <button class="filter-btn" onclick="filterByType('solo')">Solo</button>
+        <button class="filter-btn" onclick="filterByType('duo')">Duo</button>
+        <button class="filter-btn" onclick="filterByType('squad')">Squad</button>
+    </div>
+    <div class="tournament-container" id="tournamentContainer"></div>
+    <div class="ads-section">
+        <div class="ad-banner">
+            <h3>Featured Sponsor</h3>
+            <p>Get amazing deals on gaming gear! Use code PUBG2024 for 20% off</p>
+        </div>
+        <div class="ad-banner">
+            <h3>Special Event</h3>
+            <p>Weekend tournament with doubled prizes! Join now!</p>
+        </div>
+    </div>
+    <div class="modal-overlay" id="joinModal">
+        <div class="join-modal">
+            <div class="modal-header">
+                <h2 id="modalTournamentName">Tournament Name</h2>
+                <div class="fee-info">Fee: Rs <span id="modalFee">100</span></div>
+            </div>
+            <div class="payment-info">
+                <h3>Payment Details</h3>
+                <div class="account-row">
+                    <span class="account-label">JazzCash Account</span>
+                    <span class="account-number">0300-1234567</span>
+                    <button class="copy-btn" onclick="copyToClipboard('0300-1234567')">Copy</button>
+                </div>
+                <div class="account-row">
+                    <span class="account-label">EasyPaisa Account</span>
+                    <span class="account-number">0345-7654321</span>
+                    <button class="copy-btn" onclick="copyToClipboard('0345-7654321')">Copy</button>
+                </div>
+            </div>
+            <div class="tid-section">
+                <label>TID Required</label>
+                <input type="text" id="tidInput" placeholder="Enter your transaction ID">
+            </div>
+            <div class="upload-section">
+                <label>Receipt Photo Required</label>
+                <div class="upload-area" onclick="document.getElementById('receiptInput').click()">
+                    <p>Click to upload receipt screenshot</p>
+                    <input type="file" id="receiptInput" accept="image/*" style="display:none" onchange="previewReceipt(event)">
+                    <img class="upload-preview" id="receiptPreview" alt="Receipt preview">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn verify" onclick="verifyPayment()">Verify Payment</button>
+                <button class="modal-btn cancel" onclick="closeJoinModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="verify-overlay" id="verifyOverlay">
+        <div class="verify-modal">
+            <h3>Verifying Payment</h3>
+            <p>Please wait while we verify your payment...</p>
+            <div class="timer-display" id="verifyTimer">05:00</div>
+        </div>
+    </div>
+    <div class="room-overlay" id="roomOverlay">
+        <div class="room-modal">
+            <h3>Tournament Room</h3>
+            <button class="close-room-btn" onclick="closeRoomModal()">&times;</button>
+            <div class="room-info">
+                <div class="room-row">
+                    <span class="room-label">Room ID</span>
+                    <span class="room-value room-pin" id="roomId">#12-34-56</span>
+                    <button class="copy-room-btn" onclick="copyRoomId()">Copy</button>
+                </div>
+                <div class="room-row">
+                    <span class="room-label">Password</span>
+                    <span class="room-value" id="roomPass">PUBG2024</span>
+                </div>
+                <div class="room-row">
+                    <span class="room-label">Tournament</span>
+                    <span class="room-value" id="roomTournament">Tournament #12112</span>
+                </div>
+                <div class="room-row">
+                    <span class="room-label">Time Remaining</span>
+                    <span class="room-value timer" id="roomTimer">30:00</span>
+                </div>
+            </div>
+            <div class="room-buttons">
+                <button class="room-btn join" onclick="joinRoom()">Join Tournament</button>
+                <button class="room-btn pin-toggle" onclick="togglePin()" id="pinBtn">Pin Room</button>
+            </div>
+        </div>
+    </div>
+    <!-- Logout Confirmation Modal -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="join-modal">
+            <div class="modal-header">
+                <h2>Confirm Logout</h2>
+            </div>
+            <div class="payment-info" style="text-align: center; padding: 30px;">
+                <p style="color: #888; font-size: 16px; margin-bottom: 0;">Are you sure you want to logout?</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn verify" onclick="confirmLogout()">Yes</button>
+                <button class="modal-btn cancel" onclick="closeLogoutModal()">No</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Check internet connection on page load
+        window.addEventListener('load', function() {
+            if (!navigator.onLine) {
+                localStorage.setItem('lastPage', 'home.html');
+                window.location.href = 'nointernet.html';
+            }
+        });
+
+        // Listen for offline event
+        window.addEventListener('offline', function() {
+            localStorage.setItem('lastPage', 'home.html');
+            window.location.href = 'nointernet.html';
+        });
+
+        const tournaments = [
+            { id: 1, number: 12112, type: 'solo', map: 'Erangel', joiningFee: 100, totalPlayers: 100, timeLeft: '25:30', prize1st: 1500, prize2nd: 1000, prize3rd: 500 },
+            { id: 2, number: 12113, type: 'duo', map: 'Miramar', joiningFee: 150, totalPlayers: 80, timeLeft: '18:45', prize1st: 2000, prize2nd: 1200, prize3rd: 600 },
+            { id: 3, number: 12114, type: 'squad', map: 'Sanhok', joiningFee: 200, totalPlayers: 60, timeLeft: '42:10', prize1st: 3000, prize2nd: 1800, prize3rd: 900 },
+            { id: 4, number: 12115, type: 'solo', map: 'Vikendi', joiningFee: 100, totalPlayers: 120, timeLeft: '55:20', prize1st: 1500, prize2nd: 1000, prize3rd: 500 },
+            { id: 5, number: 12116, type: 'duo', map: 'Taego', joiningFee: 150, totalPlayers: 70, timeLeft: '12:00', prize1st: 2000, prize2nd: 1200, prize3rd: 600 },
+            { id: 6, number: 12117, type: 'squad', map: 'Karakin', joiningFee: 200, totalPlayers: 50, timeLeft: '38:15', prize1st: 3000, prize2nd: 1800, prize3rd: 900 },
+        ];
+        let currentTournament = null;
+        let verifyTimerInterval = null;
+        let roomTimerInterval = null;
+        let roomPinned = false;
+        function renderTournaments(filter, search) {
+            const container = document.getElementById('tournamentContainer');
+            let filtered = tournaments;
+            if (filter !== 'all') filtered = filtered.filter(t => t.type === filter);
+            if (search) {
+                const s = search.toLowerCase();
+                filtered = filtered.filter(t => t.type.includes(s) || t.map.toLowerCase().includes(s) || t.number.toString().includes(s));
+            }
+            container.innerHTML = filtered.map(t => `
+                <div class="tournament-card" data-type="${t.type}" id="card-${t.id}">
+                    <div class="tournament-header">
+                        <span class="tournament-type ${t.type}">${t.type}</span>
+                        <span class="tournament-number">#${t.number}</span>
+                        <button class="pin-btn" onclick="toggleCardPin(${t.id}, event)">📌 Pin</button>
+                    </div>
+                    <div class="map-name"><strong>Map:</strong> ${t.map}</div>
+                    <div class="tournament-details">
+                        <div class="detail-row"><span class="detail-label">Joining Fee</span><span class="detail-value">Rs ${t.joiningFee}</span></div>
+                        <div class="detail-row"><span class="detail-label">Total Players</span><span class="detail-value">${t.totalPlayers}</span></div>
+                        <div class="detail-row"><span class="detail-label">Starts In</span><span class="detail-value timer">${t.timeLeft}</span></div>
+                    </div>
+                    <div class="prize-section">
+                        <div class="prize-title">Winning Prizes</div>
+                        <div class="prize-row"><span class="prize-place">1st Place</span><span class="prize-amount">Rs ${t.prize1st}</span></div>
+                        <div class="prize-row"><span class="prize-place">2nd Place</span><span class="prize-amount">Rs ${t.prize2nd}</span></div>
+                        <div class="prize-row"><span class="prize-place">3rd Place</span><span class="prize-amount">Rs ${t.prize3rd}</span></div>
+                    </div>
+                    <button class="join-btn" onclick="openJoinModal(${t.id})">Join Tournament</button>
+                </div>
+            `).join('');
+        }
+        function filterByType(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTournaments(type, document.getElementById('tournamentSearch').value);
+        }
+        function filterTournaments() {
+            const search = document.getElementById('tournamentSearch').value;
+            const type = document.querySelector('.filter-btn.active').textContent.toLowerCase();
+            renderTournaments(type === 'all' ? 'all' : type, search);
+        }
+        function showHistory() { localStorage.setItem('lastPage', 'histroy.html'); window.location.href = 'histroy.html'; }
+        function goToHome() { localStorage.setItem('lastPage', 'home.html'); window.location.href = 'home.html'; }
+        function openJoinModal(id) {
+            currentTournament = tournaments.find(t => t.id === id);
+            document.getElementById('modalTournamentName').textContent = 'Tournament #' + currentTournament.number;
+            document.getElementById('modalFee').textContent = currentTournament.joiningFee;
+            document.getElementById('joinModal').classList.add('active');
+            document.getElementById('tidInput').value = '';
+            document.getElementById('receiptPreview').style.display = 'none';
+            document.getElementById('receiptInput').value = '';
+        }
+        function closeJoinModal() { document.getElementById('joinModal').classList.remove('active'); currentTournament = null; }
+        function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!')); }
+        function previewReceipt(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('receiptPreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        function verifyPayment() {
+            const tid = document.getElementById('tidInput').value.trim();
+            const receipt = document.getElementById('receiptInput').files[0];
+            if (!tid) { alert('Please enter TID'); return; }
+            if (!receipt) { alert('Please upload receipt photo'); return; }
+            document.getElementById('joinModal').classList.remove('active');
+            document.getElementById('verifyOverlay').classList.add('active');
+            let timeLeft = 300;
+            const timerDisplay = document.getElementById('verifyTimer');
+            verifyTimerInterval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                timerDisplay.textContent = m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
+                if (timeLeft <= 0) {
+                    clearInterval(verifyTimerInterval);
+                    document.getElementById('verifyOverlay').classList.remove('active');
+                    alert('Verification timeout. Please try again.');
+                }
+            }, 1000);
+            setTimeout(() => {
+                if (verifyTimerInterval) {
+                    clearInterval(verifyTimerInterval);
+                    document.getElementById('verifyOverlay').classList.remove('active');
+                    showRoom();
+                }
+            }, 3000 + Math.random() * 2000);
+        }
+        function showRoom() {
+            document.getElementById('roomId').textContent = '#' + Math.floor(Math.random()*9000+1000) + '-' + Math.floor(Math.random()*9000+1000) + '-' + Math.floor(Math.random()*9000+1000);
+            document.getElementById('roomPass').textContent = 'PUBG' + Math.floor(Math.random() * 9000 + 1000);
+            document.getElementById('roomTournament').textContent = 'Tournament #' + currentTournament.number;
+            document.getElementById('roomOverlay').classList.add('active');
+            let timeLeft = 1800;
+            const timerDisplay = document.getElementById('roomTimer');
+            roomTimerInterval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                timerDisplay.textContent = m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
+                if (timeLeft <= 0) {
+                    clearInterval(roomTimerInterval);
+                    alert('Tournament has started!');
+                    document.getElementById('roomOverlay').classList.remove('active');
+                }
+            }, 1000);
+            addToHistory(currentTournament);
+        }
+        function toggleCardPin(id, event) {
+            event.stopPropagation();
+            const card = document.getElementById('card-' + id);
+            card.classList.toggle('pinned');
+            const btn = card.querySelector('.pin-btn');
+            const isPinned = card.classList.contains('pinned');
+            btn.textContent = isPinned ? '📌 Pinned' : '📌 Pin';
+        }
+
+        function togglePin() {
+            roomPinned = !roomPinned;
+            const btn = document.getElementById('pinBtn');
+            btn.textContent = roomPinned ? 'Unpin Room' : 'Pin Room';
+            btn.style.background = roomPinned ? '#ffd700' : 'rgba(255,255,255,0.1)';
+            btn.style.color = roomPinned ? '#000' : '#888';
+        }
+
+        function copyRoomId() {
+            const roomId = document.getElementById('roomId').textContent;
+            navigator.clipboard.writeText(roomId).then(() => {
+                alert('Room ID copied to clipboard!');
+            });
+        }
+        function joinRoom() {
+            alert('Joined Tournament #' + currentTournament.number + '! Room is active for 30 minutes.');
+            document.getElementById('roomOverlay').classList.remove('active');
+            if (roomTimerInterval) { clearInterval(roomTimerInterval); roomTimerInterval = null; }
+        }
+        function closeRoomModal() {
+            document.getElementById('roomOverlay').classList.remove('active');
+            if (roomTimerInterval) { clearInterval(roomTimerInterval); roomTimerInterval = null; }
+        }
+        function addToHistory(t) {
+            let history = JSON.parse(localStorage.getItem('tournamentHistory') || '[]');
+            const winner = ['Player_' + Math.floor(Math.random()*10000), 'Player_' + Math.floor(Math.random()*10000), 'Player_' + Math.floor(Math.random()*10000)];
+            history.unshift({ ...t, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString(), winners: winner });
+            localStorage.setItem('tournamentHistory', JSON.stringify(history));
+        }
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
+        function confirmLogout() {
+            document.getElementById('logoutModal').classList.remove('active');
+            window.location.href = 'index.html';
+        }
+        renderTournaments('all', '');
+    </script>
+</body>
+</html>

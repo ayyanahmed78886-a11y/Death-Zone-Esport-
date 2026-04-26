@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament History</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            background-image: url('image.png');
+            background-size: 100% auto;
+            background-position: center 40%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .search-bar-container {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(17, 17, 17, 0.95);
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .search-box { display: flex; align-items: center; gap: 10px; flex: 1; max-width: 500px; }
+        .search-box input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .search-box input:focus { border-color: #111111; }
+        .search-box input::placeholder { color: #888; }
+        .search-btn {
+            padding: 12px 24px;
+            background: #111111;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .search-btn:hover { background: #333; transform: translateY(-2px); }
+        .history-switch { display: flex; align-items: center; gap: 10px; }
+        .history-switch button {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid #555;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .history-switch button:hover { background: rgba(255, 255, 255, 0.2); }
+        .history-header {
+            padding: 20px;
+            text-align: center;
+        }
+        .history-header h1 {
+            font-size: 28px;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .history-list {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .history-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .history-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .history-tournament-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .tournament-type {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .tournament-type.solo {
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+            border: 1px solid #ff453a;
+        }
+        .tournament-type.duo {
+            background: rgba(52, 199, 89, 0.2);
+            color: #34c759;
+            border: 1px solid #34c759;
+        }
+        .tournament-type.squad {
+            background: rgba(10, 132, 255, 0.2);
+            color: #0a84ff;
+            border: 1px solid #0a84ff;
+        }
+        .tournament-number-hist {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+        .history-winner {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .map-name { font-size: 14px; color: #888; margin-bottom: 10px; }
+        .map-name strong { color: white; }
+        .tournament-details { margin: 15px 0; }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+            font-size: 14px;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #888; }
+        .detail-value { color: white; font-weight: bold; }
+        .prize-section {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .prize-title {
+            text-align: center;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .prize-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 13px;
+        }
+        .prize-place { color: #888; }
+        .prize-amount { color: #ffd700; font-weight: bold; }
+        .winner-section {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .winner-title {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .winner-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 13px;
+        }
+        .winner-rank { color: #888; }
+        .winner-name { color: white; font-weight: bold; }
+        .datetime-info {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+        }
+        .no-history {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+            font-size: 16px;
+        }
+        .ads-section {
+            width: 100%;
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .ad-banner {
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .ad-banner h3 { color: #ffd700; margin-bottom: 10px; }
+        .ad-banner p { color: #888; }
+        @media (max-width: 768px) {
+            .history-card-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .search-bar-container { flex-direction: column; }
+            .search-box { max-width: 100%; }
+        }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .search-bar-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        max-width: 100%;
+      }
+      .history-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+    </style>
+</head>
+<body>
+    <div class="search-bar-container">
+        <div class="search-box">
+            <input type="text" id="historySearch" placeholder="Search history..." onkeyup="filterHistory()">
+            <button class="search-btn" onclick="filterHistory()">Search</button>
+        </div>
+        <div class="history-switch">
+            <button onclick="showHistory()">History</button>
+            <button onclick="goToHome()">Home</button>
+        </div>
+    </div>
+    <div class="history-header">
+        <h1>Tournament History</h1>
+    </div>
+    <div class="history-list" id="historyList"></div>
+    <div class="ads-section">
+        <div class="ad-banner">
+            <h3>Featured Sponsor</h3>
+            <p>Get amazing deals on gaming gear! Use code PUBG2024 for 20% off</p>
+        </div>
+        <div class="ad-banner">
+            <h3>Special Event</h3>
+            <p>Weekend tournament with doubled prizes! Join now!</p>
+        </div>
+    </div>
+    <script>
+        // Check internet connection on page load
+        window.addEventListener('load', function() {
+            if (!navigator.onLine) {
+                localStorage.setItem('lastPage', 'histroy.html');
+                window.location.href = 'nointernet.html';
+            }
+        });
+
+        // Listen for offline event
+        window.addEventListener('offline', function() {
+            localStorage.setItem('lastPage', 'histroy.html');
+            window.location.href = 'nointernet.html';
+        });
+
+        function renderHistory(filter) {
+            const container = document.getElementById('historyList');
+            let history = JSON.parse(localStorage.getItem('tournamentHistory') || '[]');
+            if (filter) {
+                history = history.filter(h => h.type === filter);
+            }
+            if (history.length === 0) {
+                container.innerHTML = '<p class="no-history">No tournament history yet. Join a tournament to see it here!</p>';
+                return;
+            }
+            container.innerHTML = history.map(h => `
+                <div class="history-card">
+                    <div class="history-card-header">
+                        <div class="history-tournament-info">
+                            <span class="tournament-type ${h.type}">${h.type}</span>
+                            <span class="tournament-number-hist">Tournament #${h.number}</span>
+                        </div>
+                        <span class="history-winner">Winner: ${h.winners[0]}</span>
+                    </div>
+                    <div class="map-name"><strong>Map:</strong> ${h.map}</div>
+                    <div class="tournament-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Date</span>
+                            <span class="detail-value">${h.date} ${h.time}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Joining Fee</span>
+                            <span class="detail-value">Rs ${h.joiningFee}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Total Players</span>
+                            <span class="detail-value">${h.totalPlayers}</span>
+                        </div>
+                    </div>
+                    <div class="prize-section">
+                        <div class="prize-title">Winning Prizes</div>
+                        <div class="prize-row">
+                            <span class="prize-place">1st Place</span>
+                            <span class="prize-amount">Rs ${h.prize1st}</span>
+                        </div>
+                        <div class="prize-row">
+                            <span class="prize-place">2nd Place</span>
+                            <span class="prize-amount">Rs ${h.prize2nd}</span>
+                        </div>
+                        <div class="prize-row">
+                            <span class="prize-place">3rd Place</span>
+                            <span class="prize-amount">Rs ${h.prize3rd}</span>
+                        </div>
+                    </div>
+                    <div class="winner-section">
+                        <div class="winner-title">Tournament Winners</div>
+                        <div class="winner-row">
+                            <span class="winner-rank">1st Place</span>
+                            <span class="winner-name">${h.winners[0]}</span>
+                        </div>
+                        <div class="winner-row">
+                            <span class="winner-rank">2nd Place</span>
+                            <span class="winner-name">${h.winners[1]}</span>
+                        </div>
+                        <div class="winner-row">
+                            <span class="winner-rank">3rd Place</span>
+                            <span class="winner-name">${h.winners[2]}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function filterHistory() {
+            const search = document.getElementById('historySearch').value.toLowerCase();
+            let history = JSON.parse(localStorage.getItem('tournamentHistory') || '[]');
+            const filtered = history.filter(h => 
+                h.type.includes(search) || 
+                h.map.toLowerCase().includes(search) ||
+                h.number.toString().includes(search) ||
+                h.winners.some(w => w.toLowerCase().includes(search))
+            );
+            const container = document.getElementById('historyList');
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="no-history">No matching history found.</p>';
+                return;
+            }
+            container.innerHTML = filtered.map(h => `
+                <div class="history-card">
+                    <div class="history-card-header">
+                        <div class="history-tournament-info">
+                            <span class="tournament-type ${h.type}">${h.type}</span>
+                            <span class="tournament-number-hist">Tournament #${h.number}</span>
+                        </div>
+                        <span class="history-winner">Winner: ${h.winners[0]}</span>
+                    </div>
+                    <div class="map-name"><strong>Map:</strong> ${h.map}</div>
+                    <div class="tournament-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Date</span>
+                            <span class="detail-value">${h.date} ${h.time}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Joining Fee</span>
+                            <span class="detail-value">Rs ${h.joiningFee}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Total Players</span>
+                            <span class="detail-value">${h.totalPlayers}</span>
+                        </div>
+                    </div>
+                    <div class="prize-section">
+                        <div class="prize-title">Winning Prizes</div>
+                        <div class="prize-row">
+                            <span class="prize-place">1st Place</span>
+                            <span class="prize-amount">Rs ${h.prize1st}</span>
+                        </div>
+                        <div class="prize-row">
+                            <span class="prize-place">2nd Place</span>
+                            <span class="prize-amount">Rs ${h.prize2nd}</span>
+                        </div>
+                        <div class="prize-row">
+                            <span class="prize-place">3rd Place</span>
+                            <span class="prize-amount">Rs ${h.prize3rd}</span>
+                        </div>
+                    </div>
+                    <div class="winner-section">
+                        <div class="winner-title">Tournament Winners</div>
+                        <div class="winner-row">
+                            <span class="winner-rank">1st Place</span>
+                            <span class="winner-name">${h.winners[0]}</span>
+                        </div>
+                        <div class="winner-row">
+                            <span class="winner-rank">2nd Place</span>
+                            <span class="winner-name">${h.winners[1]}</span>
+                        </div>
+                        <div class="winner-row">
+                            <span class="winner-rank">3rd Place</span>
+                            <span class="winner-name">${h.winners[2]}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function showHistory() { localStorage.setItem('lastPage', 'histroy.html'); window.location.href = 'histroy.html'; }
+        function goToHome() { localStorage.setItem('lastPage', 'home.html'); window.location.href = 'home.html'; }
+        renderHistory();
+    </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+or<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Internet Connection</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            background-image: url('Nointernet.png');
+            background-size: 100% auto;
+            background-position: center 40%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .no-internet-content {
+            padding: 40px;
+            text-align: center;
+        }
+        .no-internet-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .no-internet-content h1 {
+            color: #ff4444;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .no-internet-content p {
+            color: #ccc;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .reconnect-btn {
+            padding: 16px 45px;
+            background: linear-gradient(135deg, #111111, #2a2a2a);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .reconnect-btn:hover {
+            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+            border-color: #ffd700;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+        }
+        .reconnect-btn:active {
+            transform: translateY(-1px);
+        }
+        .checking-text {
+            color: #888;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff4444;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .status-dot.connected {
+            background: #34c759;
+        }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .no-internet-content {
+        padding: 20px;
+      }
+      .no-internet-icon {
+        font-size: 50px;
+      }
+      .no-internet-content h1 {
+        font-size: 22px;
+      }
+      .no-internet-content p {
+        font-size: 14px;
+      }
+      .reconnect-btn {
+        padding: 12px 30px;
+        font-size: 16px;
+      }
+    }
+    </style>
+</head>
+<body>
+    <div class="no-internet-content">
+        <div class="no-internet-icon">📶</div>
+        <h1>No Internet Connection</h1>
+        <p>It seems you're offline. Please check your network connection and try reconnecting.</p>
+        <button class="reconnect-btn" onclick="checkConnection()">
+            <span>🔄</span> Reconnect
+        </button>
+        <div class="checking-text">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Checking connection...</span>
+        </div>
+    </div>
+
+    <script>
+        let checkInterval = null;
+        let lastPage = localStorage.getItem('lastPage') || 'index.html';
+
+        // Check connection status periodically
+        function startConnectionCheck() {
+            checkInterval = setInterval(checkConnection, 3000);
+        }
+
+        function checkConnection() {
+            // Try to fetch a small resource to check connectivity
+            fetch('data:text/plain,test', { cache: 'no-store' })
+                .then(() => {
+                    // If fetch succeeds, we have internet
+                    clearInterval(checkInterval);
+                    document.getElementById('statusDot').classList.add('connected');
+                    document.getElementById('statusText').textContent = 'Connected! Redirecting...';
+                    
+                    setTimeout(() => {
+                        window.location.href = lastPage;
+                    }, 1500);
+                })
+                .catch(() => {
+                    // Still offline
+                    document.getElementById('statusDot').classList.remove('connected');
+                    document.getElementById('statusText').textContent = 'Still offline. Click Reconnect to try again.';
+                });
+        }
+
+        // Listen for online/offline events
+        window.addEventListener('online', () => {
+            clearInterval(checkInterval);
+            document.getElementById('statusDot').classList.add('connected');
+            document.getElementById('statusText').textContent = 'Connected! Redirecting...';
+            
+            setTimeout(() => {
+                window.location.href = lastPage;
+            }, 1500);
+        });
+
+        window.addEventListener('offline', () => {
+            document.getElementById('statusDot').classList.remove('connected');
+            document.getElementById('statusText').textContent = 'Connection lost. Trying to reconnect...';
+            startConnectionCheck();
+        });
+
+        // Initialize
+        document.getElementById('statusText').textContent = navigator.onLine ? 'Connected!' : 'No internet connection';
+        if (!navigator.onLine) {
+            startConnectionCheck();
+        }
+    </script>
+</body>
+</html>

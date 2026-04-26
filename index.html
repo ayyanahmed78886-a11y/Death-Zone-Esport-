@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Death Zone Esport Login</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            background-image: url('image.png');
+            background-size: cover; /* Cover the entire area without distortion */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 20px;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .google-signin-button {
+            background-color: transparent;
+            border: 2px solid white;
+            border-radius: 4px;
+            color: white;
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            font-size: 2.5vh; /* Responsive font size */
+            font-weight: 600;
+            padding: 0 5vw; /* Responsive padding */
+            height: 8vh; /* Responsive height */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            margin-top: 25px; /* Moved button down slightly more */
+        }
+        .google-signin-button:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .google-signin-button:active {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(0);
+        }
+        .google-logo {
+            width: 4vh; /* Responsive logo size */
+            height: 4vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 3vh;
+        }
+        /* Custom notification modal - ATM card style */
+        .notification-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .notification-content {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* Gradient like ATM card */
+            margin: 15% auto; /* 15% from top and centered */
+            padding: 25px;
+            border: none;
+            width: 90%; /* Increased width for smaller screens */
+            max-width: 400px; /* Increased max-width */
+            border-radius: 12px; /* Rounded corners like ATM card */
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        /* ATM card chip simulation */
+        .notification-content::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(45deg, #ffd700, #ffff00);
+            border-radius: 2px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+        /* ATM card magnetic stripe simulation */
+        .notification-content::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 60px;
+            height: 12px;
+            background: linear-gradient(90deg, #000, #434343, #000);
+            border-radius: 2px;
+        }
+        .notification-content h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        .notification-content p {
+            font-size: 18px;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        .notification-content .close-btn {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 12px 25px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .notification-content .close-btn:hover {
+            background-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+    }
+    </style>
+</head>
+<body>
+    <button class="google-signin-button" onclick="showNotification()">
+        <div class="google-logo">G</div>
+        <span>Sign in with Google</span>
+    </button>
+
+    <!-- Notification Modal - ATM Card Style -->
+    <div id="notificationModal" class="notification-modal">
+        <div class="notification-content">
+            <h2>Account Login Successful</h2>
+            <p>You have successfully logged in with Google.</p>
+            <button class="close-btn" onclick="redirectToHome()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Check internet connection on page load
+        window.addEventListener('load', function() {
+            if (!navigator.onLine) {
+                localStorage.setItem('lastPage', 'index.html');
+                window.location.href = 'nointernet.html';
+            }
+        });
+
+        // Listen for offline event
+        window.addEventListener('offline', function() {
+            localStorage.setItem('lastPage', 'index.html');
+            window.location.href = 'nointernet.html';
+        });
+
+        function showNotification() {
+            document.getElementById("notificationModal").style.display = "block";
+        }
+        
+        function redirectToHome() {
+            document.getElementById("notificationModal").style.display = "none";
+            localStorage.setItem('lastPage', 'home.html');
+            window.location.href = 'home.html';
+        }
+        
+        // Optional: Close modal when clicking outside of it
+        window.onclick = function(event) {
+            var modal = document.getElementById("notificationModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
